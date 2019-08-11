@@ -1,9 +1,8 @@
 import argparse
 import pandas as pd
+from common import NOTES_STR
 from currency import adjust_currency, CURRENCY_STR
 from plots import plot_data
-
-NOTES_STR = 'Notes'
 
 
 def clean_data(finance_data_raw):

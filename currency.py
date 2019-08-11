@@ -1,19 +1,9 @@
 import pandas as pd
-from urllib.request import urlopen
 from forex_python.converter import CurrencyRates
+from common import is_internet_available
 
 CURRENCY_STR = 'Currency Symbol'
 exchange_rate_cache = {}
-
-
-def is_internet_available():
-    try:
-        google_url = 'http://216.58.192.142'
-        urlopen(google_url, timeout=1)
-        return True
-    except:
-        print('Internet not available!')
-        return False
 
 
 def get_user_input_rate(origin_cur, target_cur):
