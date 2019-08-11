@@ -29,7 +29,7 @@ def plot_total_savings(ax, x_data, y_data, currency):
             fontsize=7, verticalalignment='top',
             bbox=BOX_STYLE)
 
-    ax.set_title(T_SVNGS_STR + ' ({})'.format(currency), fontsize=7)
+    ax.set_title(T_SVNGS_STR + ' ({})'.format(currency), fontsize=10)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
     ax.grid(which='both')
@@ -62,7 +62,7 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
             fontsize=7, verticalalignment='top',
             bbox=BOX_STYLE)
 
-    ax.set_title(I_SVNGS_STR + ' ({})'.format(currency), fontsize=7)
+    ax.set_title(I_SVNGS_STR + ' ({})'.format(currency), fontsize=10)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.grid(which='both')
 
@@ -82,14 +82,14 @@ def plot_savings_distribution(ax, x_data, data):
         list(savings_distribution)) if j not in idxs]
     current_distribution = [i for j, i in enumerate(
         current_distribution) if j not in idxs]
-    text = ''
+    text = 'Current Savings Distribution:\n'
     for i in range(len(names)):
         text += '{:.2f}% -> {}\n'.format(
             current_distribution[i] * 100, str(names[i]))
     ax.text(0.02, 0.95, text.rstrip(), transform=ax.transAxes,
             fontsize=7, verticalalignment='top', bbox=BOX_STYLE)
 
-    ax.set_title('Savings distribution', fontsize=7)
+    ax.set_title('Savings distribution', fontsize=10)
     ax.legend(tuple(savings_distribution),
               loc='lower left', fontsize='x-small')
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
