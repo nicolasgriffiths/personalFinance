@@ -20,7 +20,13 @@ def plot_total_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--b')
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 2), '--r')
 
-    ax.set_title('Total Savings in {}'.format(currency), fontsize=7)
+    text_latest = ''.join(
+        r'Total savings: %.2f' % (y_data.iloc[-1]))
+    ax.text(0.05, 0.95, text_latest, transform=ax.transAxes,
+            fontsize=7, verticalalignment='top',
+            bbox={'boxstyle': 'round', 'facecolor': 'wheat', 'alpha': 0.5})
+
+    ax.set_title('Total Savings ({})'.format(currency), fontsize=7)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
     ax.grid(which='both')
@@ -31,14 +37,23 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--r')
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 0), '--b')
 
-    text = '\n'.join((
+    text_stats = '\n'.join((
         r'$\mu=%.2f$' % (y_data.mean()),
         r'$\mathrm{median}=%.2f$' % (y_data.median()),
         r'$\sigma=%.2f$' % np.sqrt(y_data.var())))
-    ax.text(0.05, 0.95, text, transform=ax.transAxes,
+    ax.text(0.05, 0.95, text_stats, transform=ax.transAxes,
             fontsize=7, verticalalignment='top',
             bbox={'boxstyle': 'round', 'facecolor': 'wheat', 'alpha': 0.5})
-    ax.set_title('Incremental Savings in {}'.format(currency), fontsize=7)
+
+    text_latest = '\n'.join((
+        r'Saved this month %.2f' % (y_data.iloc[-1]),
+        r'%.2f wrt last month' % (y_data.iloc[-1] - y_data.iloc[-2]),
+        r'%.2f wrt mean' % (y_data.iloc[-1] - y_data.mean())))
+    ax.text(0.25, 0.95, text_latest, transform=ax.transAxes,
+            fontsize=7, verticalalignment='top',
+            bbox={'boxstyle': 'round', 'facecolor': 'wheat', 'alpha': 0.5})
+
+    ax.set_title('Incremental Savings ({})'.format(currency), fontsize=7)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.grid(which='both')
 
