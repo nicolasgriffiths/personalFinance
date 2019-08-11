@@ -17,7 +17,8 @@ def get_poly_fit(x_data, y_data, degree):
 def plot_total_savings(ax, x_data, y_data, currency):
     # TODO add stacked bars for each area
     ax.plot_date(x_data, y_data, '.-')
-    ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--k')
+    ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--b')
+    ax.plot_date(x_data, get_poly_fit(x_data, y_data, 2), '--r')
 
     ax.set_title('Total Savings in {}'.format(currency), fontsize=7)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
@@ -27,7 +28,8 @@ def plot_total_savings(ax, x_data, y_data, currency):
 
 def plot_incremental_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, y_data, '.-')
-    ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--k')
+    ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--r')
+    ax.plot_date(x_data, get_poly_fit(x_data, y_data, 0), '--b')
 
     text = '\n'.join((
         r'$\mu=%.2f$' % (y_data.mean()),
