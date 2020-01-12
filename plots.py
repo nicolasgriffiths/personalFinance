@@ -40,12 +40,14 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--r')
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 0), '--b')
 
+    mean = y_data.iloc[1:, ].mean()
+
     text_stats = ('μ={:.2f} {cur}\n'
                   'median={:.2f} {cur}\n'
                   'σ={:.2f} {cur}'
-                  .format(y_data.mean(),
-                          y_data.median(),
-                          np.sqrt(y_data.var()),
+                  .format(mean,
+                          y_data.iloc[1:, ].median(),
+                          np.sqrt(y_data.iloc[1:, ].var()),
                           cur=currency))
     ax.text(0.02, 0.95, text_stats, transform=ax.transAxes,
             fontsize=7, verticalalignment='top',
@@ -56,7 +58,7 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
                    '{:.2f} wrt mean'
                    .format(y_data.iloc[-1],
                            y_data.iloc[-1] - y_data.iloc[-2],
-                           y_data.iloc[-1] - y_data.mean(),
+                           y_data.iloc[-1] - mean,
                            cur=currency))
     ax.text(0.25, 0.95, text_latest, transform=ax.transAxes,
             fontsize=7, verticalalignment='top',
