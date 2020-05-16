@@ -29,8 +29,7 @@ def plot_total_savings(ax, x_data, y_data, currency):
     text_latest = T_SVNGS_STR + ': {:.2f} {cur}'.format(
         y_data.iloc[-1], cur=currency)
     ax.text(0.02, 0.95, text_latest, transform=ax.transAxes,
-            fontsize=7, verticalalignment='top',
-            bbox=BOX_STYLE)
+            fontsize=7, verticalalignment='top', bbox=BOX_STYLE)
 
     ax.set_title(T_SVNGS_STR + ' ({})'.format(currency), fontsize=10)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
@@ -58,8 +57,7 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
                           np.sqrt(y_data.iloc[1:, ].var()),
                           cur=currency))
     ax.text(0.02, 0.95, text_stats, transform=ax.transAxes,
-            fontsize=7, verticalalignment='top',
-            bbox=BOX_STYLE)
+            fontsize=7, verticalalignment='top', bbox=BOX_STYLE)
 
     text_latest = ('Month savings: {:.2f} {cur}\n'
                    '{:.2f} wrt last month\n'
@@ -69,8 +67,7 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
                            y_data.iloc[-1] - mean,
                            cur=currency))
     ax.text(0.25, 0.95, text_latest, transform=ax.transAxes,
-            fontsize=7, verticalalignment='top',
-            bbox=BOX_STYLE)
+            fontsize=7, verticalalignment='top', bbox=BOX_STYLE)
 
     ax.set_title(I_SVNGS_STR + ' ({})'.format(currency), fontsize=10)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
