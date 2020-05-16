@@ -6,6 +6,8 @@ from matplotlib.ticker import FixedLocator, AutoMinorLocator
 from common import T_SVNGS_STR, I_SVNGS_STR
 
 BOX_STYLE = {'boxstyle': 'round', 'facecolor': 'wheat', 'alpha': 0.5}
+N_MONTHS = 6
+
 
 # Tick label size
 matplotlib.rc('xtick', labelsize=5)
@@ -20,6 +22,7 @@ def get_poly_fit(x_data, y_data, degree):
 
 def plot_total_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, y_data, '.-')
+    ax.plot_date(x_data, y_data.rolling(N_MONTHS).mean(), '-', linewidth=1)
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--b')
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 2), '--r')
 
@@ -33,12 +36,17 @@ def plot_total_savings(ax, x_data, y_data, currency):
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
     ax.grid(which='both')
+    ax.legend(['Raw',
+               f'Rolling {N_MONTHS} months',
+               'Linear fit',
+               'Quadratic fit'])
 
 
 def plot_incremental_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, y_data, '.-')
-    ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--r')
+    ax.plot_date(x_data, y_data.rolling(N_MONTHS).mean(), '-', linewidth=1)
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 0), '--b')
+    ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--r')
 
     mean = y_data.iloc[1:, ].mean()
 
@@ -67,6 +75,10 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
     ax.set_title(I_SVNGS_STR + ' ({})'.format(currency), fontsize=10)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.grid(which='both')
+    ax.legend(['Raw',
+               f'Rolling {N_MONTHS} months',
+               'Mean',
+               'Linear fit'])
 
 
 def plot_savings_distribution(ax, x_data, data):
