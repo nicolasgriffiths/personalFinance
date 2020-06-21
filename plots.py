@@ -22,13 +22,13 @@ def get_poly_fit(x_data, y_data, degree):
 
 def plot_total_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, y_data, '.-')
-    ax.plot_date(x_data, y_data.rolling(N_MONTHS).mean(), '-', linewidth=1)
+    ax.plot_date(x_data, y_data.rolling(N_MONTHS).mean().shift(-int(N_MONTHS/2)), '-', linewidth=1)
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--b')
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 2), '--r')
 
     text_latest = T_SVNGS_STR + ': {:.2f} {cur}'.format(
         y_data.iloc[-1], cur=currency)
-    ax.text(0.02, 0.95, text_latest, transform=ax.transAxes,
+    ax.text(0.7, 0.1, text_latest, transform=ax.transAxes,
             fontsize=7, verticalalignment='top', bbox=BOX_STYLE)
 
     ax.set_title(T_SVNGS_STR + ' ({})'.format(currency), fontsize=10)
@@ -43,7 +43,7 @@ def plot_total_savings(ax, x_data, y_data, currency):
 
 def plot_incremental_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, y_data, '.-')
-    ax.plot_date(x_data, y_data.rolling(N_MONTHS).mean(), '-', linewidth=1)
+    ax.plot_date(x_data, y_data.rolling(N_MONTHS).mean().shift(-int(N_MONTHS/2)), '-', linewidth=1)
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 0), '--b')
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), '--r')
 
@@ -56,7 +56,7 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
                           y_data.iloc[1:, ].median(),
                           np.sqrt(y_data.iloc[1:, ].var()),
                           cur=currency))
-    ax.text(0.02, 0.95, text_stats, transform=ax.transAxes,
+    ax.text(0.5, 0.25, text_stats, transform=ax.transAxes,
             fontsize=7, verticalalignment='top', bbox=BOX_STYLE)
 
     text_latest = ('Month savings: {:.2f} {cur}\n'
