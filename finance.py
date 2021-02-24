@@ -7,19 +7,14 @@ from plots import plot_data
 
 def clean_data(finance_data_raw, include_pension):
     '''Extract notes and currencies from the raw financial data'''
+    if not include_pension:
+        cols = [c for c in finance_data_raw.columns if "pension" not in c.lower()]
+        finance_data_raw = finance_data_raw[cols]
+
+
     notes = finance_data_raw[[NOTES_STR]].drop(CURRENCY_STR, 0)
     currency_symbols = finance_data_raw.loc[[CURRENCY_STR]].drop(NOTES_STR, 1)
     finance_data = finance_data_raw.drop(CURRENCY_STR, 0).drop(NOTES_STR, 1)
-
-    if not include_pension:
-        cols_to_drop = []
-        for col_name in finance_data.columns:
-            if "Pension" in col_name:
-                cols_to_drop.append(col_name)
-        
-        for col_name in cols_to_drop:
-            currency_symbols = currency_symbols.drop(col_name, 1)
-            finance_data = finance_data.drop(col_name, 1)
 
     return notes, currency_symbols, finance_data
 
@@ -27,23 +22,14 @@ def clean_data(finance_data_raw, include_pension):
 def compute_savings(finance_data):
     '''Compute total and incremental savings based on clean financial data'''
     finance_data['Total Savings'] = finance_data.sum(axis=1)
-
-    # Incremental savings
-    prev = 0
-    increments = []
-    for row in finance_data['Total Savings']:
-        increments.append(row - prev)
-        prev = row
-    increments[0] = 0
-    finance_data['Incremental Savings'] = increments
+    finance_data['Incremental Savings'] = finance_data['Total Savings'].diff()
+    finance_data.iloc[0, finance_data.columns.get_loc('Incremental Savings')] = 0
 
     return finance_data
 
 
 def run(args):
-    # Load data
     finance_data_raw = pd.read_excel(args.data_path, index_col=0)
-
     notes, currency_symbols, finance_data = clean_data(finance_data_raw, args.include_pension)
     finance_data = adjust_currency(args.currency, finance_data, currency_symbols)
     finance_data = compute_savings(finance_data)
