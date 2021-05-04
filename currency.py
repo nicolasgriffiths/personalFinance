@@ -29,8 +29,16 @@ def get_exchange_rates(target_cur, currency_symbols):
 
     # Populate currencies
     for symbol in currency_symbols:
+        # Handle stock columns
+        if ':' not in currency_symbols.at[CURRENCY_STR, symbol]:
+            multiplier = 1.0
+        else:
+            parts = currency_symbols.at[CURRENCY_STR, symbol].split(':')
+            currency_symbols.at[CURRENCY_STR, symbol] = parts[0]
+            multiplier = float(parts[-1])
+        # standard handling
         currency_symbols.at[CURRENCY_STR, symbol] = get_rate(
-            currency_symbols.at[CURRENCY_STR, symbol], target_cur)
+            currency_symbols.at[CURRENCY_STR, symbol], target_cur) * multiplier
     return currency_symbols
 
 

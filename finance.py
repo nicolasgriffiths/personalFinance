@@ -5,10 +5,14 @@ from currency import adjust_currency, CURRENCY_STR
 from plots import plot_data
 
 
-def clean_data(finance_data_raw, include_pension):
+def clean_data(finance_data_raw, include_pension, include_stock):
     '''Extract notes and currencies from the raw financial data'''
     if not include_pension:
         cols = [c for c in finance_data_raw.columns if "pension" not in c.lower()]
+        finance_data_raw = finance_data_raw[cols]
+    
+    if not include_stock:
+        cols = [c for c in finance_data_raw.columns if "stock" not in c.lower()]
         finance_data_raw = finance_data_raw[cols]
 
 
@@ -30,7 +34,7 @@ def compute_savings(finance_data):
 
 def run(args):
     finance_data_raw = pd.read_excel(args.data_path, index_col=0)
-    notes, currency_symbols, finance_data = clean_data(finance_data_raw, args.include_pension)
+    notes, currency_symbols, finance_data = clean_data(finance_data_raw, args.include_pension, args.include_stock)
     finance_data = adjust_currency(args.currency, finance_data, currency_symbols)
     finance_data = compute_savings(finance_data)
     plot_data(finance_data, notes, args.currency)
@@ -44,5 +48,7 @@ if __name__ == '__main__':
                         help='Path to formatted xlsx file')
     parser.add_argument('--include-pension', action='store_true', default=False,
                         help='Wether to include columns containing \"Pension\" in the calculations')
+    parser.add_argument('--include-stock', action='store_true', default=False,
+                        help='Wether to include columns containing \"Stock\" in the calculations')
     args = parser.parse_args()
     run(args)
