@@ -127,6 +127,7 @@ def plot_savings_distribution(ax, x_data, data):
 def plot_data(finance_data, notes, currency):
     dates = matplotlib.dates.date2num(finance_data.index)
     # TODO Add notes to plots
+    del notes
     _fig1, (ax1_1, ax1_2) = plt.subplots(2, 1)
     plot_total_savings(ax1_1, dates, finance_data[T_SVNGS_STR], currency)
     plot_incremental_savings(ax1_2, dates, finance_data[I_SVNGS_STR], currency)
