@@ -34,7 +34,7 @@ def compute_savings(finance_data):
 def run(args):
     finance_data_raw = pd.read_excel(args.data_path, index_col=0)
     notes, currency_symbols, finance_data = clean_data(finance_data_raw, args.include_pension, args.include_stock)
-    finance_data = adjust_currency(args.currency, finance_data, currency_symbols, args.force_manual_exchange)
+    finance_data = adjust_currency(args.currency, finance_data, currency_symbols)
     finance_data = compute_savings(finance_data)
     plot_data(finance_data, notes, args.currency)
 
@@ -64,12 +64,6 @@ if __name__ == "__main__":
         action="store_true",
         default=False,
         help='Wether to include columns containing "Stock" in the calculations',
-    )
-    parser.add_argument(
-        "--force-manual-exchange",
-        action="store_true",
-        default=False,
-        help="Wether to force to not use automatic currency conversions",
     )
     args = parser.parse_args()
     run(args)

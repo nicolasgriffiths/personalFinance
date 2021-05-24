@@ -39,7 +39,7 @@ def get_rate(origin_cur, target_cur, date=None):
             return get_user_input_rate(origin_cur, target_cur, date)
 
 
-def get_exchange_rates(target_cur, currency_symbols, force_manual=False):
+def get_exchange_rates(target_cur, currency_symbols):
     """Get exchange rate from target currency to account currency"""
 
     def get_rate_inner(c_str):
@@ -54,9 +54,9 @@ def get_exchange_rates(target_cur, currency_symbols, force_manual=False):
     return currency_symbols
 
 
-def adjust_currency(target_currency, finance_data_raw, currency_symbols, force_manual=False):
+def adjust_currency(target_currency, finance_data_raw, currency_symbols):
     """Return finance data in the currency indicated"""
-    currency_exchange_rate = get_exchange_rates(target_currency, currency_symbols, force_manual)
+    currency_exchange_rate = get_exchange_rates(target_currency, currency_symbols)
     finance_data_eur = pd.DataFrame(
         currency_exchange_rate.values * finance_data_raw.values,
         columns=finance_data_raw.columns,
