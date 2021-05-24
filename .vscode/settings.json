@@ -3,5 +3,7 @@
     "editor.formatOnSave": true,
     "python.formatting.blackArgs": [
         "--line-length=120"
-    ]
+    ],
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }
