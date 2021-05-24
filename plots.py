@@ -31,18 +31,17 @@ def plot_total_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), "--b")
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 2), "--r")
 
-    text_latest = T_SVNGS_STR + ": {:.2f} {cur}".format(y_data.iloc[-1], cur=currency)
     ax.text(
         0.7,
         0.1,
-        text_latest,
+        f"{T_SVNGS_STR}: {y_data.iloc[-1]:.2f} {currency}",
         transform=ax.transAxes,
         fontsize=7,
         verticalalignment="top",
         bbox=BOX_STYLE,
     )
 
-    ax.set_title(T_SVNGS_STR + " ({})".format(currency), fontsize=10)
+    ax.set_title(f"{T_SVNGS_STR} ({currency})", fontsize=10)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
     ax.grid(which="both")
@@ -60,57 +59,33 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 0), "--b")
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), "--r")
 
-    mean = y_data.iloc[
-        1:,
-    ].mean()
+    mean = y_data.iloc[1:].mean()
+    median = y_data.iloc[1:].median()
+    stdev = np.sqrt(y_data.iloc[1:].var())
 
-    text_stats = (
-        "μ={:.2f} {cur}\n"
-        "median={:.2f} {cur}\n"
-        "σ={:.2f} {cur}".format(
-            mean,
-            y_data.iloc[
-                1:,
-            ].median(),
-            np.sqrt(
-                y_data.iloc[
-                    1:,
-                ].var()
-            ),
-            cur=currency,
-        )
-    )
     ax.text(
         0.5,
         0.25,
-        text_stats,
+        f"μ={mean:.2f} {currency}\nmedian={median:.2f} {currency}\nσ={stdev:.2f} {currency}",
         transform=ax.transAxes,
         fontsize=7,
         verticalalignment="top",
         bbox=BOX_STYLE,
     )
 
-    text_latest = (
-        "Month savings: {:.2f} {cur}\n"
-        "{:.2f} wrt last month\n"
-        "{:.2f} wrt mean".format(
-            y_data.iloc[-1],
-            y_data.iloc[-1] - y_data.iloc[-2],
-            y_data.iloc[-1] - mean,
-            cur=currency,
-        )
-    )
+    last_month = y_data.iloc[-1]
+    prev_month = y_data.iloc[-2]
     ax.text(
         0.25,
         0.95,
-        text_latest,
+        f"Month savings: {last_month:.2f} {currency}\n{last_month-prev_month:.2f} {currency} wrt last month\n{last_month-mean:.2f} {currency} wrt mean",
         transform=ax.transAxes,
         fontsize=7,
         verticalalignment="top",
         bbox=BOX_STYLE,
     )
 
-    ax.set_title(I_SVNGS_STR + " ({})".format(currency), fontsize=10)
+    ax.set_title(f"{I_SVNGS_STR} ({currency})", fontsize=10)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.grid(which="both")
     ax.legend(["Raw", f"Rolling {N_MONTHS} months", "Mean", "Linear fit"])
@@ -130,7 +105,7 @@ def plot_savings_distribution(ax, x_data, data):
     current_distribution = [i for j, i in enumerate(current_distribution) if j not in idxs]
     text = "Current Savings Distribution:\n"
     for i in range(len(names)):
-        text += "{:.2f}% -> {}\n".format(current_distribution[i] * 100, str(names[i]))
+        text += f"{current_distribution[i] * 100:.2f}% -> {names[i]}\n"
     ax.text(
         0.02,
         0.95,
