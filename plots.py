@@ -104,8 +104,8 @@ def plot_savings_distribution(ax, x_data, data):
     names = [i for j, i in enumerate(list(savings_distribution)) if j not in idxs]
     current_distribution = [i for j, i in enumerate(current_distribution) if j not in idxs]
     text = "Current Savings Distribution:\n"
-    for i in range(len(names)):
-        text += f"{current_distribution[i] * 100:.2f}% -> {names[i]}\n"
+    for n, d in zip(names, current_distribution):
+        text += f"{d * 100:04.1f}% -> {clean_finance_data[n][-1]:08.2f} -> {n}\n"
     ax.text(
         0.02,
         0.95,
