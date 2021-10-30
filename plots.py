@@ -23,19 +23,14 @@ def get_poly_fit(x_data, y_data, degree):
 
 def plot_total_savings(ax, x_data, y_data, currency):
     ax.plot_date(x_data, y_data, ".-")
-    ax.plot_date(
-        x_data,
-        y_data.rolling(N_MONTHS).mean().shift(-int(N_MONTHS / 2)),
-        "-",
-        linewidth=1,
-    )
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), "--b")
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 2), "--r")
+    last_year_savings = y_data.iloc[-1] - y_data.iloc[-13]
 
     ax.text(
         0.7,
-        0.1,
-        f"{T_SVNGS_STR}: {y_data.iloc[-1]:.2f} {currency}",
+        0.2,
+        f"{T_SVNGS_STR}: {y_data.iloc[-1]:.2f} {currency}\nYear savings: {last_year_savings:.2f} {currency}",
         transform=ax.transAxes,
         fontsize=7,
         verticalalignment="top",
@@ -46,7 +41,7 @@ def plot_total_savings(ax, x_data, y_data, currency):
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.yaxis.set_minor_locator(AutoMinorLocator(2))
     ax.grid(which="both")
-    ax.legend(["Raw", f"Rolling {N_MONTHS} months", "Linear fit", "Quadratic fit"])
+    ax.legend(["Raw", "Linear fit", "Quadratic fit"])
 
 
 def plot_incremental_savings(ax, x_data, y_data, currency):
