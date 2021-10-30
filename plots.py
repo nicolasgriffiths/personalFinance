@@ -7,6 +7,7 @@ from common import T_SVNGS_STR, I_SVNGS_STR
 
 BOX_STYLE = {"boxstyle": "round", "facecolor": "wheat", "alpha": 0.5}
 N_MONTHS = 6
+matplotlib.rcParams["font.family"] = "monospace"
 
 
 # Tick label size
