@@ -95,8 +95,8 @@ def plot_savings_distribution(ax, x_data, data):
     total_savings = data[[T_SVNGS_STR]]
     clean_finance_data = data.drop(T_SVNGS_STR, 1)
     savings_distribution = clean_finance_data.div(total_savings[T_SVNGS_STR], axis=0)
-
-    ax.plot_date(x_data, savings_distribution, ".-")
+    ax.stackplot(x_data, savings_distribution.fillna(0).T)
+    ax.xaxis_date()
 
     # Delete NaN and print current distribution
     current_distribution = savings_distribution.iloc[-1].tolist()
@@ -105,7 +105,7 @@ def plot_savings_distribution(ax, x_data, data):
     current_distribution = [i for j, i in enumerate(current_distribution) if j not in idxs]
     text = "Current Savings Distribution:\n"
     for n, d in zip(names, current_distribution):
-        text += f"{d * 100:04.1f}% -> {clean_finance_data[n][-1]:08.2f} -> {n}\n"
+        text += f"{d: 6.1%} -> {clean_finance_data[n][-1]: 10.2f} -> {n}\n"
     ax.text(
         0.02,
         0.95,
@@ -121,7 +121,6 @@ def plot_savings_distribution(ax, x_data, data):
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.yaxis.set_major_locator(matplotlib.ticker.MultipleLocator(base=0.05))
     ax.set_ylim([0, 1])
-    ax.grid(which="both")
 
 
 def plot_data(finance_data, notes, currency):
