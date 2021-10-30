@@ -74,7 +74,11 @@ def plot_incremental_savings(ax, x_data, y_data, currency):
     ax.text(
         0.25,
         0.95,
-        f"Month savings: {last_month:.2f} {currency}\n{last_month-prev_month:.2f} {currency} wrt last month\n{last_month-mean:.2f} {currency} wrt mean",
+        (
+            f"Month savings: {last_month:.2f} {currency}\n"
+            f"{last_month-prev_month:.2f} {currency} wrt last month\n"
+            f"{last_month-mean:.2f} {currency} wrt mean"
+        ),
         transform=ax.transAxes,
         fontsize=7,
         verticalalignment="top",
