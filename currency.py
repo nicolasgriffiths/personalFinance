@@ -2,17 +2,17 @@ import datetime
 import pandas as pd
 from forex_python.converter import CurrencyRates
 from currency_converter import CurrencyConverter
+from typing import Dict
 
-from common import is_internet_available
+from common import CURRENCY_STR
 
-CURRENCY_STR = "Currency Symbol"
-EXCHANGE_RATE_CACHE = {}
+EXCHANGE_RATE_CACHE: Dict[str, float] = {}
 
 CURRENCY_RATE = CurrencyRates()
 CURRENCY_CONVERTER = CurrencyConverter(fallback_on_wrong_date=True, fallback_on_missing_rate=True)
 
 
-def get_user_input_rate(origin_cur, target_cur, date=None):
+def get_user_input_rate(origin_cur: str, target_cur: str, date=None) -> Dict[str, float]:
     del date
     # Check cached values
     if origin_cur in EXCHANGE_RATE_CACHE:
@@ -26,7 +26,7 @@ def get_user_input_rate(origin_cur, target_cur, date=None):
     return EXCHANGE_RATE_CACHE[origin_cur]
 
 
-def get_rate(origin_cur, target_cur, date=None):
+def get_rate(origin_cur: str, target_cur: str, date=None) -> float:
     """Try to get exchange rate with two provders, fall back to user input rate if both fail"""
     try:
         return CURRENCY_RATE.get_rate(origin_cur, target_cur, date)
@@ -39,10 +39,10 @@ def get_rate(origin_cur, target_cur, date=None):
             return get_user_input_rate(origin_cur, target_cur, date)
 
 
-def get_exchange_rates(target_cur, currency_symbols):
+def get_exchange_rates(target_cur: str, currency_symbols: pd.DataFrame) -> pd.DataFrame:
     """Get exchange rate from target currency to account currency"""
 
-    def get_rate_inner(c_str):
+    def get_rate_inner(c_str: str) -> float:
         # Handle stock columns
         multiplier = 1.0 if ":" not in c_str else float(c_str.split(":")[-1])
         return get_rate(c_str.split(":")[0], target_cur, datetime.datetime.now()) * multiplier
@@ -54,7 +54,9 @@ def get_exchange_rates(target_cur, currency_symbols):
     return currency_symbols
 
 
-def adjust_currency(target_currency, finance_data_raw, currency_symbols):
+def adjust_currency(
+    target_currency: str, finance_data_raw: pd.DataFrame, currency_symbols: pd.DataFrame
+) -> pd.DataFrame:
     """Return finance data in the currency indicated"""
     currency_exchange_rate = get_exchange_rates(target_currency, currency_symbols)
     finance_data_eur = pd.DataFrame(
