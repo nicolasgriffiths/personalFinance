@@ -2,7 +2,7 @@ import argparse
 import pandas as pd
 
 from common import NOTES_STR, CURRENCY_STR, PENSION_STR, STOCK_STR
-from currency import adjust_currency
+from mycurrency import adjust_currency
 from plots import plot_data
 from typing import Tuple
 
@@ -21,8 +21,8 @@ def clean_data(
         cols = [c for c in finance_data_raw.columns if STOCK_STR not in c.lower()]
         finance_data_raw = finance_data_raw[cols]
 
-    currency_symbols = finance_data_raw.loc[[CURRENCY_STR]].drop(NOTES_STR, 1)
-    finance_data = finance_data_raw.drop(CURRENCY_STR, 0).drop(NOTES_STR, 1)
+    currency_symbols = finance_data_raw.loc[[CURRENCY_STR]].drop(labels=NOTES_STR, axis=1)
+    finance_data = finance_data_raw.drop(labels=CURRENCY_STR, axis=0).drop(labels=NOTES_STR, axis=1)
 
     return currency_symbols, finance_data
 

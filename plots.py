@@ -94,7 +94,7 @@ def plot_incremental_savings(ax: plt.Axes, x_data, y_data, currency: str) -> Non
 
 def plot_savings_distribution(ax: plt.Axes, x_data, data) -> None:
     total_savings = data[[T_SVNGS_STR]]
-    clean_finance_data = data.drop(T_SVNGS_STR, 1)
+    clean_finance_data = data.drop(labels=T_SVNGS_STR, axis=1)
     savings_distribution = clean_finance_data.div(total_savings[T_SVNGS_STR], axis=0)
     ax.stackplot(x_data, savings_distribution.fillna(0).T)
     ax.xaxis_date()
@@ -131,5 +131,5 @@ def plot_data(finance_data: pd.DataFrame, currency: str) -> None:
     plot_incremental_savings(ax1_2, dates, finance_data[I_SVNGS_STR], currency)
 
     _, (ax2) = plt.subplots(1, 1)
-    plot_savings_distribution(ax2, dates, finance_data.drop(I_SVNGS_STR, 1))
+    plot_savings_distribution(ax2, dates, finance_data.drop(labels=I_SVNGS_STR, axis=1))
     plt.show()
