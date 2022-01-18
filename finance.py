@@ -1,5 +1,6 @@
 import argparse
 import pandas as pd
+import urllib.request
 
 from common import NOTES_STR, CURRENCY_STR, PENSION_STR, STOCK_STR
 from mycurrency import adjust_currency
@@ -35,7 +36,12 @@ def compute_savings(finance_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def run(args):
-    finance_data_raw = pd.read_excel(args.data_path, index_col=0)
+    if args.url is not None:
+        filename, headers = urllib.request.urlretrieve(args.url)
+    else:
+        filename = args.data_path
+
+    finance_data_raw = pd.read_excel(filename, index_col=0)
     currency_symbols, finance_data = clean_data(finance_data_raw, args.include_pension, args.include_stock)
     finance_data = adjust_currency(args.currency, finance_data, currency_symbols)
     finance_data = compute_savings(finance_data)
@@ -55,6 +61,12 @@ if __name__ == "__main__":
         type=str,
         default="data/data.xlsx",
         help="Path to formatted xlsx file",
+    )
+    parser.add_argument(
+        "--url",
+        type=str,
+        default=None,
+        help="URL to xlsx file. For google sheets, replace `/edit#gid=` in normal URL with `/export?format=xlsx&gid=`",
     )
     parser.add_argument(
         "--include-pension",
