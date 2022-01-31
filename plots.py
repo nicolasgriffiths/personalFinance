@@ -7,7 +7,7 @@ from matplotlib.ticker import FixedLocator, AutoMinorLocator
 from common import T_SVNGS_STR, I_SVNGS_STR
 
 BOX_STYLE = {"boxstyle": "round", "facecolor": "wheat", "alpha": 0.5}
-ROLL_MONTHS = 6
+ROLL_MONTHS = [6, 12]
 matplotlib.rcParams["font.family"] = "monospace"
 
 
@@ -47,12 +47,13 @@ def plot_total_savings(ax: plt.Axes, x_data, y_data, currency: str) -> None:
 
 def plot_incremental_savings(ax: plt.Axes, x_data, y_data, currency: str) -> None:
     ax.plot_date(x_data, y_data, ".-")
-    ax.plot_date(
-        x_data,
-        y_data.rolling(ROLL_MONTHS).mean().shift(-int(ROLL_MONTHS / 2)),
-        "-",
-        linewidth=1,
-    )
+    for r in ROLL_MONTHS:
+        ax.plot_date(
+            x_data,
+            y_data.rolling(r).mean().shift(-int(r / 2)),
+            "-",
+            linewidth=1,
+        )
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 0), "--b")
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), "--r")
 
@@ -89,7 +90,7 @@ def plot_incremental_savings(ax: plt.Axes, x_data, y_data, currency: str) -> Non
     ax.set_title(f"{I_SVNGS_STR} ({currency})", fontsize=10)
     ax.xaxis.set_minor_locator(FixedLocator(x_data))
     ax.grid(which="both")
-    ax.legend(["Raw", f"Rolling {ROLL_MONTHS} months", "Mean", "Linear fit"])
+    ax.legend(["Raw"] + [f"Rolling {r} months" for r in ROLL_MONTHS] + ["Mean", "Linear fit"])
 
 
 def plot_savings_distribution(ax: plt.Axes, x_data, data) -> None:
