@@ -1,5 +1,5 @@
 matplotlib==3.0.0
-numpy==1.15.2
+numpy==1.22.0
 pandas==0.23.4
 forex-python==1.5
 currencyconverter==0.16.1
