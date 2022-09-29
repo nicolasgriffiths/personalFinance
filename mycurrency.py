@@ -1,18 +1,22 @@
+"""In charge of doing currency conversions via multiple python libraries"""
+
 import datetime
-import pandas as pd
-from forex_python.converter import CurrencyRates
-from currency_converter import CurrencyConverter
 from typing import Dict
+
+from currency_converter import CurrencyConverter, ECB_URL
+from forex_python.converter import CurrencyRates
+import pandas as pd
 
 from common import CURRENCY_STR
 
 EXCHANGE_RATE_CACHE: Dict[str, float] = {}
 
 CURRENCY_RATE = CurrencyRates()
-CURRENCY_CONVERTER = CurrencyConverter(fallback_on_wrong_date=True, fallback_on_missing_rate=True)
+CURRENCY_CONVERTER = None  # Set lazily if forex_python fails
 
 
 def get_user_input_rate(origin_cur: str, target_cur: str, date=None) -> Dict[str, float]:
+    """Get currency exchange rate via user input on keyboard"""
     del date
     # Check cached values
     if origin_cur in EXCHANGE_RATE_CACHE:
@@ -29,14 +33,19 @@ def get_user_input_rate(origin_cur: str, target_cur: str, date=None) -> Dict[str
 def get_rate(origin_cur: str, target_cur: str, date=None) -> float:
     """Try to get exchange rate with two provders, fall back to user input rate if both fail"""
     try:
-        return CURRENCY_RATE.get_rate(origin_cur, target_cur, date)
-    except:
+        rate = CURRENCY_RATE.get_rate(origin_cur, target_cur, date)
+    except:  # pylint: disable=bare-except
         try:
             print("WARNING: forex_python failed, attempting with currency_converter")
-            return CURRENCY_CONVERTER.convert(1.0, origin_cur, target_cur, date)
-        except:
-            print("WARNING: forex_python failed, attempting manually")
-            return get_user_input_rate(origin_cur, target_cur, date)
+            global CURRENCY_CONVERTER  # pylint: disable=global-statement
+            if CURRENCY_CONVERTER is None:
+                CURRENCY_CONVERTER = CurrencyConverter(currency_file=ECB_URL)
+            rate = CURRENCY_CONVERTER.convert(1.0, origin_cur, target_cur, date)
+        except:  # pylint: disable=bare-except
+            print("WARNING: currency_converter also failed, attempting manually")
+            rate = get_user_input_rate(origin_cur, target_cur, date)
+    print(origin_cur, target_cur, rate)
+    return float(rate)  # sometimes it returns a string apparently?
 
 
 def get_exchange_rates(target_cur: str, currency_symbols: pd.DataFrame) -> pd.DataFrame:
