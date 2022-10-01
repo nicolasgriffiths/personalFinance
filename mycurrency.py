@@ -44,7 +44,7 @@ def get_rate(origin_cur: str, target_cur: str, date=None) -> float:
         except:  # pylint: disable=bare-except
             print("WARNING: currency_converter also failed, attempting manually")
             rate = get_user_input_rate(origin_cur, target_cur, date)
-    print(origin_cur, target_cur, rate)
+    print(f"1 {origin_cur} = {rate:.3f} {target_cur}")
     return float(rate)  # sometimes it returns a string apparently?
 
 
@@ -54,7 +54,8 @@ def get_exchange_rates(target_cur: str, currency_symbols: pd.DataFrame) -> pd.Da
     def get_rate_inner(c_str: str) -> float:
         # Handle stock columns
         multiplier = 1.0 if ":" not in c_str else float(c_str.split(":")[-1])
-        return get_rate(c_str.split(":")[0], target_cur, datetime.datetime.now()) * multiplier
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        return get_rate(c_str.split(":")[0], target_cur, yesterday) * multiplier
 
     # Populate currencies
     for symbol in currency_symbols:
