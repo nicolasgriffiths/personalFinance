@@ -26,6 +26,7 @@ def plot_total_savings(ax: plt.Axes, x_data, y_data, currency: str) -> None:
     ax.plot_date(x_data, y_data, ".-")
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), "--b")
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 2), "--r")
+    ax.axhline(0.0, color="k")
     last_year_savings = y_data.iloc[-1] - y_data.iloc[-13]
 
     ax.text(
@@ -56,6 +57,7 @@ def plot_incremental_savings(ax: plt.Axes, x_data, y_data, currency: str) -> Non
         )
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 0), "--b")
     ax.plot_date(x_data, get_poly_fit(x_data, y_data, 1), "--r")
+    ax.axhline(0.0, color="k")
 
     mean = y_data.iloc[1:].mean()
     median = y_data.iloc[1:].median()
