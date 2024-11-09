@@ -1,4 +1,5 @@
 import datetime
+import math
 from typing import Dict, Optional
 from functools import lru_cache
 
@@ -47,37 +48,42 @@ def now() -> datetime.datetime:
     return datetime.datetime.now()
 
 
-def get_exchange_rates(target_cur: str, currency_symbols: pd.DataFrame) -> pd.DataFrame:
+def get_exchange_rates(
+    target_cur: str, currency_symbols: pd.DataFrame, finance_data: pd.DataFrame
+) -> pd.DataFrame:
     """Get exchange rate from target currency to account currency"""
+    conversion = finance_data.copy()
 
-    def get_rate_inner(c_str: str) -> float:
+    def get_rate_inner(c_str: str, date: datetime.datetime = now()) -> float:
         # Handle stock columns
         multiplier = 1.0 if ":" not in c_str else float(c_str.split(":")[-1])
         for i in range(5):
-            day = now() - (datetime.timedelta(hours=6) * (2**i))
+            day = date - (datetime.timedelta(hours=6) * (2**i))
             maybe_rate = get_rate(c_str.split(":")[0], target_cur, day)
             if maybe_rate is not None:
                 return maybe_rate * multiplier
         print("WARNING: All automatic currency conversion failed, attempting manually")
         return get_user_input_rate(c_str, target_cur)
 
-    # Populate currencies
-    for symbol in currency_symbols:
-        currency_symbols.at[CURRENCY_STR, symbol] = get_rate_inner(
-            currency_symbols.at[CURRENCY_STR, symbol]
-        )
+    def get_conversion(row: pd.core.series.Series) -> pd.core.series.Series:
+        date = row.name
+        for i, (x, symbol) in enumerate(zip(row, currency_symbols)):
+            if not math.isnan(x):
+                row.iloc[i] = get_rate_inner(
+                    currency_symbols.at[CURRENCY_STR, symbol], date
+                )
+        return row
 
-    return currency_symbols
+    for i in range(len(conversion)):
+        conversion.iloc[i] = get_conversion(conversion.iloc[i])
+    return conversion
 
 
 def adjust_currency(
-    target_currency: str, finance_data_raw: pd.DataFrame, currency_symbols: pd.DataFrame
+    target_currency: str, finance_data: pd.DataFrame, currency_symbols: pd.DataFrame
 ) -> pd.DataFrame:
     """Return finance data in the currency indicated"""
-    currency_exchange_rate = get_exchange_rates(target_currency, currency_symbols)
-    finance_data_eur = pd.DataFrame(
-        currency_exchange_rate.values * finance_data_raw.values,
-        columns=finance_data_raw.columns,
-        index=finance_data_raw.index,
+    currency_exchange_rate = get_exchange_rates(
+        target_currency, currency_symbols, finance_data
     )
-    return finance_data_eur
+    return finance_data * currency_exchange_rate

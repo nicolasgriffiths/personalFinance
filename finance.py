@@ -7,7 +7,7 @@ from mycurrency import adjust_currency
 from plots import plot_data
 from typing import Tuple
 
-from common import T_SVNGS_STR, I_SVNGS_STR
+from common import T_SVNGS_STR, I_SVNGS_STR, get_end_of_month_or_today
 
 
 def clean_data(
@@ -22,8 +22,12 @@ def clean_data(
         cols = [c for c in finance_data_raw.columns if STOCK_STR not in c.lower()]
         finance_data_raw = finance_data_raw[cols]
 
-    currency_symbols = finance_data_raw.loc[[CURRENCY_STR]].drop(labels=NOTES_STR, axis=1)
-    finance_data = finance_data_raw.drop(labels=CURRENCY_STR, axis=0).drop(labels=NOTES_STR, axis=1)
+    currency_symbols = finance_data_raw.loc[[CURRENCY_STR]].drop(
+        labels=NOTES_STR, axis=1
+    )
+    finance_data = finance_data_raw.drop(labels=CURRENCY_STR, axis=0).drop(
+        labels=NOTES_STR, axis=1
+    )
 
     return currency_symbols, finance_data
 
@@ -42,7 +46,10 @@ def run(args):
         filename = args.data_path
 
     finance_data_raw = pd.read_excel(filename, index_col=0)
-    currency_symbols, finance_data = clean_data(finance_data_raw, args.include_pension, args.include_stock)
+    currency_symbols, finance_data = clean_data(
+        finance_data_raw, args.include_pension, args.include_stock
+    )
+    finance_data.index = finance_data.index.map(get_end_of_month_or_today)
     finance_data = adjust_currency(args.currency, finance_data, currency_symbols)
     finance_data = compute_savings(finance_data)
     plot_data(finance_data, args.currency)
